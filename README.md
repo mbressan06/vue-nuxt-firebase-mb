@@ -6,7 +6,7 @@
 
 ### Firebase Config
 
-> Go to firebase console, 
+> Go to Firebase console
 
 - Create a project
 
@@ -14,12 +14,11 @@
 
 - Project Setting → Service accounts → Firebase Admin SDK → Choose Node.js → Click on generate new private key
 
-  This will download a JSON file required for Firebase. Paste it in the root directory and rename as `admin.json`
-
+This will download a JSON file required for Firebase. Paste it in the root directory and rename as `admin.json`
 
 ### Seeding the database
 
-> Run the following command for scrapping the all Beaches data listed in this [Url](https://guiaviajarmelhor.com.br/melhores-praias-brasil/) and populate the Firebase Realtime Database.
+> Then run the following command for scrapping the all Beaches data listed in this [Url](https://guiaviajarmelhor.com.br/melhores-praias-brasil/) and populate the Firebase Realtime Database.
 
 ```bash
 # seed database
@@ -28,7 +27,7 @@ $ npm run seed
 
 ### Running the Application
 
-Then run the following commands:
+> Run the following commands:
 
 ```bash
 # install dependencies
