@@ -4,7 +4,9 @@
 
 ## Build Setup
 
-### Create a `firebase.js` file inside `/plugins` folder with the firebase configuration params
+### Firebase Config
+
+> Create a `firebase.js` file inside `/plugins` folder with the firebase configuration params
 
 ```js
 import * as firebase from 'firebase/app';
