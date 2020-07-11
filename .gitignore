@@ -1,8 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 ## Firebase config
-
-plugins/firebase.js
 admin.json
 
 ### Node template

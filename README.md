@@ -6,30 +6,17 @@
 
 ### Firebase Config
 
-> Create a `firebase.js` file inside `/plugins` folder with the firebase configuration params
+> Go to firebase console, create a project
 
-```js
-import * as firebase from 'firebase/app';
-import 'firebase/auth';
+- Navigate to, Project Setting → Service accounts → Firebase Admin SDK → Choose Node.js → Click on generate new private key
 
-var firebaseConfig = {
-  apiKey: "application-apiKey",
-  authDomain: "application-authDomain",
-  databaseURL: "application-databaseURL",
-  projectId: "application-projectId",
-  storageBucket: "application-storageBucket",
-  messagingSenderId: "application-messagingSenderId",
-  appId: "application-appId"
-};
+This will download a JSON file required for Firebase. Paste it in the root directory and rename as admin.json
 
-let app = null;
+Run the following command for scrapping the all Beaches data listed in this [Url](https://guiaviajarmelhor.com.br/melhores-praias-brasil/) and populate the Firebase Realtime Database.
 
-if(!firebase.app.length){
-  app = firebase.initializeApp(firebaseConfig);
-}
-
-export default firebase;
-
+```bash
+# seed database
+$ npm run seed
 ```
 
 Then run the following commands:
