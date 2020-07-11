@@ -12,7 +12,10 @@
   },
   "dependencies": {
     "ant-design-vue": "^1.1.10",
+    "axios": "^0.19.2",
+    "cheerio": "^1.0.0-rc.3",
     "firebase": "^7.16.0",
+    "firebase-admin": "^8.13.0",
     "nuxt": "^2.0.0"
   },
   "devDependencies": {}

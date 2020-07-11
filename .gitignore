@@ -3,6 +3,7 @@
 ## Firebase config
 
 plugins/firebase.js
+admin.json
 
 ### Node template
 # Logs
