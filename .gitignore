@@ -3,6 +3,9 @@
 ## Firebase config
 admin.json
 
+## Temporary folder
+/tmp
+
 ### Node template
 # Logs
 /logs
