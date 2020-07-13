@@ -14,7 +14,7 @@
 
 - Project Setting → Service accounts → Firebase Admin SDK → Choose Node.js → Click on generate new private key
 
-This will download a JSON file required for Firebase. Paste it in the root directory and rename as `admin.json`
+This will download a JSON file required for Firebase. Paste it in the root directory and rename as `service-account.json`
 
 ### Seeding the database
 
