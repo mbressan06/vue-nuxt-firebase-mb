@@ -120,7 +120,6 @@ const downloadImages = (uri, dest, cb) => {
       };
     })
     .on('end', () => {
-
     })
 };
 
