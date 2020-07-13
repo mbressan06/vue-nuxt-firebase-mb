@@ -1,14 +1,12 @@
-const {Storage} = require('@google-cloud/storage');
 const admin = require('firebase-admin');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
-const request = require('request');
-const serviceAccount = require('./admin.json');
+const http = require('https');
+const _cliProgress = require('cli-progress');
+const serviceAccount = require('../service-account.json');
 
 const url = 'https://guiaviajarmelhor.com.br/melhores-praias-brasil/';
-
-const storage = new Storage();
 
 const dir = './tmp';
 
@@ -76,20 +74,54 @@ const convert_accented_characters = (str) => {
   conversions['f'] = 'ƒ';
 
   for (let i in conversions) {
-      const re = new RegExp(conversions[i],"g");
-      str = str.replace(re,i);
+    const re = new RegExp(conversions[i],"g");
+    str = str.replace(re,i);
   }
-
+    
   return str;
 }
 
-const downloadImages = (uri, filename, callback) => {
+const progressBar = new _cliProgress.SingleBar({
+  format: '{bar} {percentage}% | ETA: {eta}s'
+}, _cliProgress.Presets.shades_classic);
+
+const handleFailure = (err) => { 
+  throw err; 
+};
+
+const downloadImages = (uri, dest, cb) => {
   if (!fs.existsSync(dir)){
-      fs.mkdirSync(dir);
+    fs.mkdirSync(dir);
   }
-  request.head(uri, () => {
-    request(uri).pipe(fs.createWriteStream(`${dir}/${filename}`)).on('close', callback);
-  });
+  
+  let file = fs.createWriteStream(dest);
+  return http.get(uri, async (response) => {
+    let receivedBytes = 0
+    const totalBytes = response.headers['content-length'];
+    progressBar.start(totalBytes, 0);
+      
+    response
+      .on('data', (chunk) => {
+        receivedBytes += chunk.length;
+        progressBar.update(receivedBytes);
+      })
+      .pipe(file, { end:false })
+
+    file.on('finish', () => {
+      file.close(cb);  // close() is async, call cb after close completes.
+    });
+  })
+    .on('error', (err) => { // Handle errors
+      console.log(err);
+      fs.unlink(dest); // Delete the file async. (But we don't check the result)
+      if (cb) {
+        file.close(cb);
+        handleFailure(err.message)
+      };
+    })
+    .on('end', () => {
+
+    })
 };
 
 const addBeaches = (beaches) => {
@@ -101,24 +133,10 @@ const addBeaches = (beaches) => {
   });
 };
 
-
-async function uploadFile(filename) {
-  console.log(`${dir}/${filename}`);
-  await storage.bucket('vue-nuxt-firebase-mb.appspot.com').upload(`${dir}/${filename}`, {
-    gzip: true,
-    metadata: {
-      cacheControl: 'public, max-age=31536000',
-    },
-  });
-
-  console.log(`${filename} uploaded to ${bucket}.`);
-}
-
-
 axios(url)
   .then(response => {
     const html = response.data;
-    const $ = cheerio.load(html)
+    const $ = cheerio.load(html);
     const beachTitle = $('.entry-content > h3');
   
     const topBeaches = beachTitle.map((i, element) => {
@@ -133,26 +151,24 @@ axios(url)
       beach.description = $(element).next().next().text();
       beach.filename = filename;
 
-      downloadImages(
+      const promise = downloadImages(
         $(element).next().children('img').attr('data-src').toString(), 
-        filename, 
-        () => {
-          console.log(filename);
+        `${dir}/${filename}`, 
+        (res) => {
+          console.info({ filename }, { res });
         }
-      );
+      )
       
-      //uploadFile(filename).catch(console.error);
-        
+      console.info({promise});
+      
       return beach;
   }).get();
-
+  //TODO: Remove comment before commit
   addBeaches(topBeaches)
-    .then(() => {
-      return process.exit(0);
-    })
     .catch((err) => {
-      console.log('error', err);
-      return process.exit(1);
-    });
+      handleFailure(err)
+  });
 
-}).catch(console.error);
+}).catch((err) => {
+  handleFailure(err)
+});

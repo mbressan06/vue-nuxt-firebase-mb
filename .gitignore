@@ -1,7 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 ## Firebase config
-admin.json
+service-account.json
 
 ## Temporary folder
 /tmp

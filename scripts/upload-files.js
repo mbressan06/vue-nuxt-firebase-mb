@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const fs = require('fs');
-const serviceAccount = require('./admin.json');
+const serviceAccount = require('../service-account.json');
+
 const dir = './tmp';
 
 admin.initializeApp({
@@ -13,17 +14,17 @@ const bucket = admin.storage().bucket();
 
 const uploadFiles = () => {
   if (fs.existsSync(dir)){
-    fs.readdir('./tmp', function (err, files) {
+    fs.readdir(dir, (err, files) => {
       if (err) {
-          return console.log('Unable to scan directory: ' + err);
+          return console.error('Unable to scan directory: ' + err);
       } 
-      files.forEach(function (file) {
-        bucket.upload(`${dir}/${file}`, function(err, file, apiResponse) {
-          console.log(apiResponse);
+      files.forEach((file) => {
+        bucket.upload(`${dir}/${file}`, (errResponse, fileResponse, apiResponse) => {
+          console.info(apiResponse);
         })
       });
     });
   }
 }
-
+// TODO: Remove comment before commit
 uploadFiles();

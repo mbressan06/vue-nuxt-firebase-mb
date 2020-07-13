@@ -43,3 +43,15 @@ $ npm run start
 # generate static project
 $ npm run generate
 ```
+
+### Firebase Hosting Deploy
+
+> After generating a static project just connect to FirebaseCLI and run the deploy command.
+
+```bash
+# firebase login
+$ firebase login
+
+# firebase deploy
+$ firebase deploy
+```
