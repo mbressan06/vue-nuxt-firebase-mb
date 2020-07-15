@@ -3,7 +3,8 @@
 ## Firebase config
 .firebase
 service-account.json
-nuxt.config.js
+enviroments.json
+
 ## Temporary folder
 /tmp
 

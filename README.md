@@ -12,9 +12,9 @@
 
 > Navigate to:
 
-- Project Setting → Service accounts → Firebase Admin SDK → Choose Node.js → Click on generate new private key
+- Project Setting → General → Scroll down to Firebase SDK Snippet → Select Configuration
 
-This will download a JSON file required for Firebase. Paste it in the root directory and rename as `service-account.json`
+Copy the `firebaseConfig` Object to create the `enviroments.json` file based on the `enviroments.example.json`.
 
 ### Seeding the database
 
