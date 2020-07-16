@@ -1,40 +1,47 @@
-/**
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+const serviceAccount = require('../service-account.json');
+
 'use strict';
 
-const functions = require('firebase-functions');
+const firebaseConfig = {
+  serviceAccount: serviceAccount,
+  databaseURL: 'https://vue-nuxt-firebase-mb.firebaseio.com/',
+  storageBucket: 'gs://vue-nuxt-firebase-mb.appspot.com/'
+};
 
-// Max number of lines of the chat history.
-const MAX_LOG_COUNT = 5;
+admin.initializeApp(firebaseConfig);
 
-// Removes siblings of the node that element that triggered the function if there are more than MAX_LOG_COUNT.
-// In this example we'll keep the max number of chat message history to MAX_LOG_COUNT.
-exports.truncate = functions.database.ref('/chat/{messageid}').onWrite(async (change) => {
-  const parentRef = change.after.ref.parent;
-  const snapshot = await parentRef.once('value');
-  if (snapshot.numChildren() >= MAX_LOG_COUNT) {
-    let childCount = 0;
-    const updates = {};
-    snapshot.forEach((child) => {
-      if (++childCount <= snapshot.numChildren() - MAX_LOG_COUNT) {
-        updates[child.key] = null;
-      }
-    });
-    // Update the parent. This effectively removes the extra children.
-    return parentRef.update(updates);
+
+exports.loadBeaches = functions.https.onRequest((async (req, res) => {
+  const parentRef = admin.database().ref();
+  const list = await parentRef.once('value')
+  .then((snapshot) => {
+    return res.status(200).send(snapshot.val());
+  })
+  
+})
+);
+
+
+const cors = require('cors')({
+  origin: true,
+});
+
+exports.list = functions.https.onRequest((req, res) => {
+
+  if (req.method === 'PUT') {
+    return res.status(403).send('Forbidden!');
   }
-  return null;
+
+  return cors(req, res, () => {
+    let format = req.query.format;
+
+    if (!format) {
+      format = req.body.format;
+
+    }
+    
+
+  });
 });
