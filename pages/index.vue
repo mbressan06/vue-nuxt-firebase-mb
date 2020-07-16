@@ -1,50 +1,39 @@
 <template>
   <a-layout 
-    :style="{ background: '#fff', border: '1px solid red' }"
+    :style="{ background: '#fff' }"
   >
     <a-layout-header 
-      :style="{ padding: '0', background: '#fff', border: '1px solid green' }"
+      :style="{ padding: '0', background: '#fff' }"
     >
       <!-- TODO: Place logo -->
     </a-layout-header>
     <a-layout-content
-      :style="{ margin: '0 16px', padding: '24px', background: '#fff', minHeight: '90vh', border: '1px solid yellow' }"
+      :style="{ margin: '0 16px', padding: '24px', background: '#fff', minHeight: '90vh' }"
     >
       <div class="container">
-        <a-row :style="{ border: '1px solid purple' }">
+        <a-row
+          v-for="(beach, index) in beaches"
+          :key="index"
+        >
           <a-col 
             class="row" 
-            :gutter="16" 
-            :style="{ border: '1px solid pink' }"
+            :gutter="24"
           >
-            <div class="box">
-              <a-button @click="getData()">
-                Load
-              </a-button>
+            <div 
+              class="box"
+            >
+              <p>{{ beach.beachName }}</p>
             </div>
           </a-col>
           <a-col
             class="row" 
-            :gutter="16" 
-            :style="{ border: '1px solid pink' }"
+            :gutter="24"
           >
             <div class="box">
-              <a-button @click="writeToRealtimeDb()">
-                Write
-              </a-button>
-            </div>
-          </a-col>
-        </a-row>
-        <a-row :style="{ border: '1px solid purple' }">
-          <a-col 
-            class="row"  
-            :gutter="16" 
-            :style="{ border: '1px solid pink' }"
-          >
-            <div class="box">
-              <a-button @click="getFileUrl()">
-                Load
-              </a-button>
+              <img 
+                :id="beach.filename"
+                :alt="beach.beachName"
+              >
             </div>
           </a-col>
         </a-row>
@@ -57,45 +46,36 @@
 import Axios from 'axios'
 
 export default {
-  // asyncData () {
-  //   const beachesRef = this.$fireDb.ref('beaches'); // Where 'cases' is the json object
-  //   return axios.get(beachesRef.toString() + '.json')
-  //     .then((res) => {
-  //       return { title: res.data }
-  //     })
-  // },
-  methods: {
-    async getData() {
-      const beachesRef = this.$fireDb.ref('beaches'); // Where 'cases' is the json object
-      try {
-          Axios.get(beachesRef.toString() + '.json')
-            .then(response => {
-            return response.data;
-          }).catch((e) => console.error(e))
-      } catch (e) {
-        console.info(e.message);
-      }
-    },
-    async writeToRealtimeDb() {
-      const messageRef = this.$fireDb.ref('message')
-      return await messageRef.set({
-          message: 'Nuxt-Fire with Firebase Realtime Database rocks!'
-        }).then(
-          console.info('Success.')
-        ).catch((e) => {
+  async fetch () {
+    const insertImg = (filename) => {
+      const storageRef = this.$fireStorage.ref();
+      storageRef.child(filename).getDownloadURL().then((url) => {
+        // Or inserted into an <img> element:
+          var img = document.getElementById(filename);
+          return img.src = url;
+        }).catch((e) => {
           console.error(e);
-      })    
-    },
-    async getFileUrl() {
-      const storageRef = this.$fireStorage.ref().child('antigos_e_antiguinhos.jpg');
-      try {
-        const url = await storageRef.getDownloadURL()
-        console.info(`The file can be found here: ${url}`);
-      } catch (e) {
-        console.info(e.message);
-      }
+        });
     }
-  }
+
+    const beachesRef = this.$fireDb.ref('beaches'); 
+    this.beaches = await Axios.get(beachesRef.toString() + '.json')
+      .then(response => {
+        const beaches = response.data[Object.keys(response.data)];
+        
+        beaches.forEach(beach => {
+          insertImg(beach.filename);
+        })
+        return beaches; 
+    })
+      .catch((e) => console.error(e))
+  },
+  data () {
+    return {
+      beaches: []
+    }
+  },
+  fetchOnServer: false
 }
 
 </script>

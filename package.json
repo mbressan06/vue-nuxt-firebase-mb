@@ -21,6 +21,7 @@
     "cheerio": "^1.0.0-rc.3",
     "cli-progress": "^3.8.2",
     "firebase": "^7.16.0",
+    "firebase-admin": "^9.0.0",
     "nuxt": "^2.0.0",
     "uuid-v4": "^0.1.0"
   },
